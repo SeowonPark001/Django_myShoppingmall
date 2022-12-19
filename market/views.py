@@ -139,7 +139,7 @@ class GoodsList(ListView):
     # goods_list.html: ListView이 (모델명)_list.html을 템플릿으로 인지
 
     ordering = '-pk'    # 최신등록순
-    paginate_by = 5     # 18장 Pagination: 한 페이지에 포스트 n개씩만 보여주기
+    paginate_by = 5     # Pagination: 한 페이지에 포스트 n개씩만 보여주기
 
     # Context 데이터 전달
     def get_context_data(self, *, object_list=None, **kwargs):
