@@ -42,9 +42,11 @@ class Category(models.Model):
 class Maker(models.Model):
     name = models.CharField(max_length=50, unique=True) # 고유값
     slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)  # unicode: 한글 사용
+    address = models.TextField()    # 주소
+    phone = models.CharField(max_length=20, unique=True) # 연락처 - 고유값
+    website = models.CharField(max_length=100, unique=True) # 웹사이트 url
 
-
-    # p.category 객체 요청 > 문자열 반환
+    # p.maker 객체 요청 > 문자열 반환
     def __str__(self):
         return self.name
 
@@ -65,16 +67,18 @@ class Goods(models.Model):
     hook_text = models.CharField(max_length=100, blank=True) # 미리보기 글 # char: 제한 가능 / text: 제한X
     content = models.TextField()
 
+    price = models.IntegerField(default=10000) # 가격
+
     created_at = models.DateTimeField(auto_now_add=True)  # 새로 작성 시 auto_now_add
     updated_at = models.DateTimeField(auto_now=True)  # 수정(업데이트) 시 auto_now
 
-    head_image = models.ImageField(upload_to='blog/images/%Y/%m/%d/', blank=True)
-    file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
+    head_image = models.ImageField(upload_to='market/images/%Y/%m/%d/', blank=True)
 
-    # => 다대일 관계: ForeignKey() 사용         # on_delete=models.CASCADE : user 삭제되면 > post도 같이 없어진다
-    # author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL) # <- 괄호() X
-                                    # null=True 반드시 필요 // SET_NULL: user가 삭제되면 null(none)로 바꿈 >> post 그대로 유지
-    maker = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    # => 다대일 관계: ForeignKey() 사용         # on_delete=models.CASCADE : user 삭제되면 > goods도 같이 없어진다
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL) # <- 괄호() X
+                                    # null=True 반드시 필요 // SET_NULL: user가 삭제되면 null(none)로 바꿈 >> goods 그대로 유지
+    # 다대일: 제조사 & 카테고리
+    maker = models.ForeignKey(Maker, null=True, blank=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
                                                     # blank: admin/form에서 공란 허용
     # 다대다 관계: 태그
@@ -82,17 +86,10 @@ class Goods(models.Model):
 
 
     def __str__(self):
-        # {self.pk} : 해당 포스트 pk 값 // {self.title} : 해당 포스트의 title 값
-       return f'[{self.pk}] {self.title}::{self.author} _ {self.created_at}' # ex) [1] Post_title_1::작성자  2022.01.01 00:00:00
+       return f'[{self.pk}] {self.title}::{self.author} _ {self.created_at}' # ex) [1] Goods_title_1::작성자  2022.01.01 00:00:00
 
-    # admin 페이지의 [view on site] 연결
     def get_absolute_url(self):
-        return f'/market/{self.pk}/'  # localhost:8000/blog/1
-
-    # 파일 관리
-    def get_file_name(self):
-        return os.path.basename(self.file_upload.name) # 파일 이름만 반환 ex) abc.txt
-        # self.file_upload.name : 파일 경로만 반환 ex) blog/files/abc.txt
+        return f'/market/{self.pk}/'
 
     # 아바타 이미지
     def get_avatar_url(self):
@@ -103,7 +100,7 @@ class Goods(models.Model):
 
 
 
-# 17장 댓글 (다대일) - Post 모델 밑에 작성
+# 댓글 (다대일) - Goods 모델 밑에 작성
 class Comment(models.Model):
     goods = models.ForeignKey(Goods, on_delete=models.CASCADE)    # 포스트 삭제 시 댓글도 모두 삭제
     author = models.ForeignKey(User, on_delete=models.CASCADE)  # 댓글 삭제 시 작성자도 모두 삭제
@@ -114,7 +111,6 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.author} : {self.content}'    # 작성자 : 댓글내용
 
-    # admin 페이지의 [view on site] 연결
     def get_absolute_url(self):
         return f'{self.goods.get_absolute_url()}#comment-{self.pk}' # 샵(#) 뒤: 해당 id 값의 태그로 이동
 

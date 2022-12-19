@@ -1,0 +1,34 @@
+{% extends 'market/base.html' %}
+{% load crispy_forms_tags %}
+
+<!-- market page head title -->
+{% block head_title %}
+    Create a Goods - Market
+{% endblock %}
+
+{% block main_area %}
+
+<h1>Create a New Goods</h1>
+<hr/>
+
+<form method="post" enctype="multipart/form-data">
+    <!-- token -->
+    {% csrf_token %}
+
+    <!-- view.py의 fields > models.py에 내용 있음 -->
+        {{ form | crispy }}  <!-- form이 없으면 crispy 적용 -->
+
+        <!-- 태그 입력: [,], [;] 으로 구분 -->
+        <!-- select -> text 입력창으로 변환 -->
+
+        <!-- crispy form -->
+        <div id="div_id_tags_str">
+            <label for="id_tags">Tags: </label>
+            <input id="id_tags" type="text" name="tags_str" class="textinput textInput form-control">
+        </div>
+
+    <button type="submit" class="btn btn-primary float-right">Submit</button>
+
+</form>
+
+{% endblock %}

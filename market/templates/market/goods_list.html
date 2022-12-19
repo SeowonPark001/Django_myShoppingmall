@@ -1,0 +1,118 @@
+{% extends 'market/base.html' %}
+{% block main_area %}
+
+<!-- 새 상품 등록 Form: 인증된 사용자인 경우 >> 상품 생성 페이지로 가는 버튼 -->
+{% if user.is_authenticated %}
+    {% if user.is_superuser or user.is_staff %}
+        <a class="btn btn-info float-right" href="/market/create_goods/" role="button">
+            <i class="fas fa-pen"> New Goods</i>
+        </a>
+    {% endif %}
+{% endif %}
+
+<h2><a href="/market/" style="color: black;">Seowon's Market</a>
+    {% if category %}
+    - <span class="badge badge-secondary">{{ category }}</span>
+    {% endif %}
+
+    {% if maker %}
+    - <span class="badge badge-secondary">{{ maker }}</span>
+    {% endif %}
+
+    {% if tag %}
+    - <i class="fas fa-tag"></i>
+    <span class="badge badge-secondary">
+        {{ tag }} ({{ tag.goods_set.count }}) <!-- 모델_set -->
+    </span>
+    {% endif %}
+
+    {% if search_info %}
+    <span class="badge badge-secondary">{{ search_info }}</span>
+    {% endif %}
+</h2>
+
+{% if goods_list.exists %}
+    {% for g in goods_list %}
+    <div class="card mb-4" id="goods-{{ g.pk }}">
+        <!-- Head image -->
+        {% if g.head_image %}
+            <img class="card-img-top" src="{{ g.head_image.url }}" alt="{{ g }}의 head_image" />
+        {% else %}
+            <img class="card-img-top" src="https://picsum.photos/seed/{{ g.pk }}/640/360" alt="random image" />
+        {% endif %}
+
+        <div class="card-body">
+            <!-- Category -->
+            {% if g.category %}
+                <span class="badge badge-secondary float-right">
+                    <a href="{{ g.category.get_absolute_url }}"> <!-- /market/category/slug/ -->
+                        {{ g.category }}
+                    </a>
+                </span>
+            {% else %}
+                <span class="badge badge-secondary float-right">
+                    <a href="/market/category/no_category/">미분류</a>
+                </span>
+            {% endif %}
+
+            <!-- Title -->
+            <h2 class="card-title">{{ g.title | upper }}</h2> <!-- upper: 대문자 / lower: 소문자 -->
+
+            <!-- Hook Text -->
+            {% if g.hook_text %}
+                <h5 class="text-muted">{{ g.hook_text }}</h5>
+            {% endif %}
+
+            <p class="card-text">{{ g.content | truncatewords:45 }}</p> <!-- 45개 단어 제한 / truncatechars: 글자수 제한 -->
+
+            <h3>가격: {{ g.price }}원</h3>
+
+            <!-- Post Tag -->
+            {% if g.tags.exists %}
+            <i class="fas fa-tag"></i>
+                {% for t in g.tags.iterator %}
+                    <span class="badge badge-pill badge-light">
+                        <a href="{{ t.get_absolute_url }}">#{{ t }}</a>
+                    </span>
+                {% endfor %}
+            {% endif %}
+            <br><br>
+
+            <a class="btn btn-primary" href="{{ g.get_absolute_url }}">Read more →</a>
+        </div>
+
+        <div class="card-footer">
+            <div class="small text-muted">{{ g.created_at }}</div> <!-- date 처리 : Y-m-d h:m:s 형태로 출력 -->
+            <a href="#">{{ g.author | upper }}</a> <!-- upper 처리 >> test 가능 -->
+        </div>
+    </div>
+    {% endfor %}
+
+{% else %}
+    <h5>아직 게시물이 없습니다.</h5>
+{% endif %}
+
+<!-- 18장: Pagination : n페이지 표시 -->
+<!-- post 개수가 paginated_by(=5)보다 적은 경우 -->
+{% if is_paginated %}
+    <nav aria-label="Pagination">
+        <hr class="my-0" />
+        <ul class="pagination justify-content-center my-4">
+            <!-- 이전 페이지가 있는지 확인 -->
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page.obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Newer &larr;</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer &larr;</a></li>
+            {% endif %}
+
+            <!-- 다음 페이지가 있는지 확인 -->
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page.obj.next_page_number }}">&rarr; Older</a></li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#!">&rarr; Older</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+
+{% endblock %}

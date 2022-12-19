@@ -14,8 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+# 정적파일: url 처리
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # IP주소/admin
+    path('market/', include('market.urls')),  # IP주소/market
+    path('', include('single_pages.urls')),  # IP주소/
+
+    # allauth에서 제공하는 url => migrate만!
+    path('accounts/', include('allauth.urls')),  # IP주소/accounts/
 ]
+
+# 미디어 파일을 위한 url 지정
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

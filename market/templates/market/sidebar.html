@@ -1,0 +1,73 @@
+<!-- Sidebar: Search + Categories widget-->
+
+<!-- Search widget-->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fa-solid fa-magnifying-glass"></i> Search
+    </div>
+    <div class="card-body">
+        <div class="input-group">
+            <input id="search-input" class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
+            <button class="btn btn-primary" id="button-search" type="button" onclick="searchPost()">Go!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Search - 검색어 함수 js으로 작성 -->
+<script>
+    function searchGoods() {                         // id값          // 앞뒤 공백 제거
+        let searchValue = document.getElementById('search-input').value.trim();
+        // 검색어 입력 시 >> 검색 페이지로 이동
+        if (searchValue.length > 1 ) {
+            location.href = "/market/search/" + searchValue + "/";
+        }
+        else { // 검색어가 두 글자 미만인 경우
+            alert('검색어(' + searchValue + ')가 너무 짧아요.');
+        }
+    };
+    // 엔터키로도 검색
+    document.getElementById('search-input').addEventListener('keyup', function(event){
+        if (event.key === 'Enter') {
+            searchGoods();
+        }
+    });
+</script>
+
+<!-- Categories widget-->
+<div class="card mb-4" id="category_card"> <!-- id 추가 -->
+    <div class="card-header">Categories</div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-sm-12">
+                <ul class="list-unstyled mb-0">
+                    {% for c in categories %}
+                    <li><a href="{{ c.get_absolute_url }}">{{ c }} ({{ c.goods_set.count }})</a></li>
+                    {% endfor %} <!-- /market/category/slug/ -->
+                    <li><a href="/market/category/no_category/">미분류 ({{ no_category_goods_count }})</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Maker widget-->
+<div class="card mb-4" id="maker_card"> <!-- id 추가 -->
+    <div class="card-header">Makers</div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-sm-12">
+                <ul class="list-unstyled mb-0">
+                    {% for m in makers %}
+                    <li><a href="{{ m.get_absolute_url }}">{{ m }} ({{ m.goods_set.count }})</a></li>
+                    {% endfor %} <!-- /market/makers/slug/ -->
+                    <li><a href="/market/makers/no_category/">미분류 ({{ no_makers_goods_count }})</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>

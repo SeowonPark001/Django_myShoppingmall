@@ -1,0 +1,105 @@
+<!--navbar + Modal-->
+
+<!-- Google 로그인 -->
+{% load socialaccount %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <a class="navbar-brand" href="/">Seowon's Market</a> <!-- #: 자기 자신 -->
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <!-- urls.py에 적어둔 대로 경로 바꿔주기 -->
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home</a> <!-- <span class="sr-only">(current)</span> -->
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/market/">Market</a> <!-- urls.py에 적어둔 대로 경로 바꿔주기 -->
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about_market/">About Market</a> <!-- urls.py에 적어둔 대로 경로 바꿔주기 -->
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <!-- 사용자 아바타 사진 출력-->
+                    {% if user.socialaccount_set.all.0.get_avatar_url %}
+                        <img class="rounded-circle mr-3" src="{{user.socialaccount_set.all.0.get_avatar_url}}" width="25px">
+                    {% else %}
+                        <img class="rounded-circle mr-3" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" width="25px">
+                    {% endif %}
+
+                    {{ user.username }}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="/my_page/">My Page</a>
+                    <a class="dropdown-item" href="/accounts/logout">Logout</a>
+                </div>
+            </li>
+
+            {% else %}
+            <li class="nav-item ml-auto">                        <!-- 해당 id 값의 Modal창 이용 -->
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#loginModal">
+                    Login
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  <i class="fa-solid fa-right-to-bracket"></i> Login
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6">
+
+                        <!-- # Google Login -->
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm"
+                           href="{% provider_login_url 'google' %}"> <!-- href="#" -->
+                            <i class="fa-brands fa-google"></i> Log in with Google
+                        </a>
+                        <!-- # Email Login -->
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm"
+                           href="/accounts/login/">
+                            <i class="fa-regular fa-envelope"></i> Log in with E-mail
+                        </a>
+                    </div>
+                    <!-- # Email Signup -->
+                    <div class="col-6">
+                        <a role="button" class="btn btn-outline-dark btn-block btn-sm"
+                           href="/accounts/signup">
+                            <i class="fa-regular fa-envelope"></i> Sign up with email
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+      </div>
+    </div>
+</div>

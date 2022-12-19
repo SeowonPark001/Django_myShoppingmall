@@ -1,0 +1,25 @@
+{% extends 'market/base.html' %}
+
+{% load crispy_forms_tags %}
+
+<!-- goods page head title -->
+{% block head_title %}
+    Edit the Comment - Goods
+{% endblock %}
+
+<!-- Featured Market goods -->
+{% block main_area %}
+
+<h1>Edit the Comment</h1>
+<hr/>
+
+<form method="post" enctype="multipart/form-data">
+    <!-- token -->
+    {% csrf_token %}
+
+    {{ form | crispy }} <!-- view.py의 fields > models.py에 내용 있음 -->
+
+    <button type="submit" class="btn btn-primary float-right">Submit</button>
+</form>
+
+{% endblock %}
